@@ -11,7 +11,7 @@ export default defineConfig({
       '@': path.resolve(process.cwd(), './src'),
     },
   },
-  base: process.env.GITHUB_PAGES === 'true' ? '/SC/' : '/',
+  base: process.env.GITHUB_PAGES === 'true' ? '/StuCial/' : '/',
   build: {
     target: 'esnext',
     outDir: 'dist',
