@@ -30,7 +30,9 @@ export default defineConfig({
       '@': path.resolve(process.cwd(), './src'),
     },
   },
-  base: process.env.GITHUB_PAGES === 'true' ? '/StuCial/' : '/',
+  // For main GitHub Pages site (username.github.io), use '/'
+  // For project sites (username.github.io/repo-name), use '/repo-name/'
+  base: process.env.GITHUB_PAGES === 'true' ? '/' : '/',
   build: {
     target: 'esnext',
     outDir: 'dist',
