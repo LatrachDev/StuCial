@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 
 const LanguageContext = createContext(undefined);
 
@@ -17,7 +17,7 @@ const translations = {
     
     // Login Page
     'login.title': 'Stucial',
-    'login.subtitle': 'Morocco\'s premier social platform connecting university students',
+    'login.subtitle': 'Morocco\'s first social platform connecting university students',
     'login.welcomeBack': 'Welcome back!',
     'login.signInMessage': 'Sign in to connect with students across Morocco',
     'login.email': 'University Email',
@@ -539,6 +539,12 @@ export function LanguageProvider({ children }) {
   const t = (key) => {
     return translations[language][key] || key;
   };
+
+  // Update document direction based on language
+  useEffect(() => {
+    document.documentElement.dir = language === 'ar' ? 'rtl' : 'ltr';
+    document.documentElement.lang = language;
+  }, [language]);
 
   return (
     <LanguageContext.Provider value={{ language, setLanguage, t }}>

@@ -1,108 +1,27 @@
 import { useState } from 'react';
-import { Search, Filter, Download, FileText, File } from 'lucide-react';
+import { Search, Filter, Download, FileText, File, Eye } from 'lucide-react';
 import { Card } from './ui/card';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Badge } from './ui/badge';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
 import { useLanguage } from '../contexts/LanguageContext';
+import docspdf from '../assets/docspdf.pdf';
 
 const documents = [
   {
     id: 1,
-    title: 'Algorithms and Data Structures - Complete Course',
-    type: 'Course',
-    subject: 'Computer Science',
-    semester: 'S3',
+    title: 'T.D. de Probabilités : SERIE 1',
+    type: 'Document',
+    subject: 'General',
+    semester: 'All',
     format: 'PDF',
-    size: '5.2 MB',
-    downloads: 342,
-    uploadedBy: 'Ahmed Benali',
-    date: '2024-11-05'
-  },
-  {
-    id: 2,
-    title: 'Linear Algebra - Chapter 1 Exercises',
-    type: 'Exercises',
-    subject: 'Mathematics',
-    semester: 'S1',
-    format: 'PDF',
-    size: '1.8 MB',
-    downloads: 267,
-    uploadedBy: 'Yasmine El Mansouri',
-    date: '2024-11-08'
-  },
-  {
-    id: 3,
-    title: 'Database Systems - Lecture Notes',
-    type: 'Notes',
-    subject: 'Computer Science',
-    semester: 'S4',
-    format: 'PDF',
-    size: '3.4 MB',
-    downloads: 198,
-    uploadedBy: 'Fatima Zahra',
-    date: '2024-11-10'
-  },
-  {
-    id: 4,
-    title: 'Thermodynamics - Summary Sheet',
-    type: 'Summary',
-    subject: 'Physics',
-    semester: 'S2',
-    format: 'PDF',
-    size: '890 KB',
-    downloads: 156,
-    uploadedBy: 'Omar Idrissi',
-    date: '2024-11-02'
-  },
-  {
-    id: 5,
-    title: 'Object-Oriented Programming - Past Exams',
-    type: 'Exams',
-    subject: 'Computer Science',
-    semester: 'S3',
-    format: 'PDF',
-    size: '2.1 MB',
-    downloads: 421,
-    uploadedBy: 'Karim Alami',
-    date: '2024-11-01'
-  },
-  {
-    id: 6,
-    title: 'Probability and Statistics - Full Notes',
-    type: 'Notes',
-    subject: 'Mathematics',
-    semester: 'S4',
-    format: 'PDF',
-    size: '4.7 MB',
-    downloads: 234,
-    uploadedBy: 'Salma Bennani',
-    date: '2024-11-09'
-  },
-  {
-    id: 7,
-    title: 'Network Security - Lab Work Solutions',
-    type: 'Lab Work',
-    subject: 'Computer Science',
-    semester: 'S5',
-    format: 'PDF',
-    size: '1.5 MB',
-    downloads: 89,
-    uploadedBy: 'Youssef Tahiri',
-    date: '2024-11-11'
-  },
-  {
-    id: 8,
-    title: 'Microeconomics - Chapter Summaries',
-    type: 'Summary',
-    subject: 'Economics',
-    semester: 'S2',
-    format: 'PDF',
-    size: '2.3 MB',
-    downloads: 145,
-    uploadedBy: 'Nadia Fassi',
-    date: '2024-11-07'
+    size: 'N/A',
+    downloads: 0,
+    uploadedBy: 'System',
+    date: new Date().toISOString().split('T')[0],
+    pdfUrl: docspdf
   }
 ];
 
@@ -111,6 +30,7 @@ export function DocumentsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterSubject, setFilterSubject] = useState('all');
   const [filterType, setFilterType] = useState('all');
+  const [selectedPdf, setSelectedPdf] = useState(null);
 
   const filteredDocuments = documents.filter(doc => {
     const matchesSearch = doc.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -212,10 +132,27 @@ export function DocumentsPage() {
                     <span className="text-sm text-[#5A6C7D]">
                       {t('documents.uploadedBy')} {doc.uploadedBy} • {doc.date}
                     </span>
-                    <Button className="bg-[#0A2463] hover:bg-[#1976D2] text-white rounded-xl">
-                      <Download className="w-4 h-4 mr-2" />
-                      {t('documents.download')}
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button 
+                        onClick={() => setSelectedPdf(doc.pdfUrl)}
+                        className="bg-[#3E92CC] hover:bg-[#1976D2] text-white rounded-xl"
+                      >
+                        <Eye className="w-4 h-4 mr-2" />
+                        View
+                      </Button>
+                      <Button 
+                        onClick={() => {
+                          const link = document.createElement('a');
+                          link.href = doc.pdfUrl;
+                          link.download = 'document.pdf';
+                          link.click();
+                        }}
+                        className="bg-[#0A2463] hover:bg-[#1976D2] text-white rounded-xl"
+                      >
+                        <Download className="w-4 h-4 mr-2" />
+                        {t('documents.download')}
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -223,7 +160,22 @@ export function DocumentsPage() {
           ))}
         </div>
       </div>
+
+      {/* PDF Viewer Dialog */}
+      <Dialog open={selectedPdf !== null} onOpenChange={(open) => !open && setSelectedPdf(null)}>
+        <DialogContent className="max-w-[95vw] w-full rounded-2xl max-h-[95vh] overflow-hidden p-0">
+          <DialogHeader className="p-6 pb-4">
+            <DialogTitle className="text-2xl text-[#0A2463]">Document Viewer</DialogTitle>
+          </DialogHeader>
+          <div className="w-full h-[calc(95vh-120px)] overflow-auto">
+            <iframe
+              src={selectedPdf || ''}
+              className="w-full h-full border-0"
+              title="PDF Viewer"
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
-
