@@ -32,7 +32,7 @@ export default defineConfig({
   },
   // For main GitHub Pages site (username.github.io), use '/'
   // For project sites (username.github.io/repo-name), use '/repo-name/'
-  base: process.env.GITHUB_PAGES === 'true' ? '/' : '/',
+  base: process.env.GITHUB_PAGES === 'true' ? '/StuCial/' : '/',
   build: {
     target: 'esnext',
     outDir: 'dist',
